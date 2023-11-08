@@ -1,3 +1,22 @@
 from django.contrib import admin
+from .models import *
 
-# Register your models here.
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'client']
+
+@admin.register(OrderItem)
+class OrderItemAdmin(admin.ModelAdmin):
+    list_display = ['order', 'product', 'quantity']
+
+@admin.register(ItemDetail)
+class ItemDetailAdmin(admin.ModelAdmin):
+    list_display = ['order_item', 'ingredient', 'quantity']
+
+@admin.register(OrderState)
+class OrderStateAdmin(admin.ModelAdmin):
+    list_display = ['name']
+
+@admin.register(OrderStateChange)
+class OrderStateChangeAdmin(admin.ModelAdmin):
+    list_display = ['date_time', 'order', 'state']
