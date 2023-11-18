@@ -11,11 +11,12 @@ urlpatterns = [
 ]
 """
 
-from django.urls import path
+from django.urls import path, include
 from .views import *
 
 app_name = 'menu'
 
 urlpatterns = [
-    path('categories/', GetCategories.as_view()),
+    path('categories/', include('menu.urls.category')),
+    path('products/', include('menu.urls.product'))
 ]

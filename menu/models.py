@@ -2,12 +2,16 @@ from django.db import models
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     state = models.BooleanField(default=True)
 
     @classmethod
     def get_active_categories(cls):
-        return Category.objects.filter(state=False)
+        return Category.objects.filter(state=True)
+
+    @classmethod
+    def get_inactive_categories(cls):
+        return  Category.objects.filter(state=False)
 
     def __str__(self):
         return self.name
@@ -15,6 +19,9 @@ class Category(models.Model):
     def get_products(self):
         return self.products.filter(product__state=True)
 
+    def delete(self, using=None, keep_parents=False):
+        self.state = False
+        self.save()
 
 class Product(models.Model):
     name = models.CharField(max_length=50)
