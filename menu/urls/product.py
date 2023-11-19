@@ -1,11 +1,5 @@
-from django.urls import path
-from menu.views.category import *
+from .partials import get_abm_patterns
+from menu.models import Product
+from menu.serializers import ProductSerializer
 
-urlpatterns = [
-    path('active/', Active.as_view()),
-    path('inactive/', Inactive.as_view()),
-    path('delete/', Delete.as_view()),
-    path('recover/', Recover.as_view()),
-    path('new/', New.as_view()),
-    path('alter/', Alter.as_view()),
-]
+urlpatterns = get_abm_patterns(Product, ProductSerializer)

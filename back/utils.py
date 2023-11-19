@@ -21,7 +21,7 @@ def inactive(Model):
     return Model.objects.filter(state=False)
 
 
-class Alter(APIView):
+class AlterView(APIView):
     Model = None
     Serializer = None
 
@@ -46,7 +46,7 @@ class Alter(APIView):
             return Response({'error': e})
 
 
-class New(APIView):
+class NewView(APIView):
     Model = None
     Serializer = None
 
@@ -64,8 +64,7 @@ class New(APIView):
         except Exception as e:
             return Response({"error": str(e)})
 
-
-class Active(APIView):
+class ActiveView(APIView):
     Model = None
     Serializer = None
 
@@ -76,18 +75,21 @@ class Active(APIView):
         return Response(serializer.data)
 
 
-class Inactive(APIView):
+class InactiveView(APIView):
     Model = None
     Serializer = None
 
     def get(self, request):
         entities = inactive(self.Model)
         serializer = self.Serializer(entities, many=True)
+        self.as_view()
 
         return Response(serializer.data)
 
 
-class Delete(APIView):
+
+
+class DeleteView(APIView):
     Model = None
     Serializer = None
 
@@ -100,7 +102,7 @@ class Delete(APIView):
         return Response(serializer.data)
 
 
-class Recover(APIView):
+class RecoverView(APIView):
     Model = None
     Serializer = None
 
@@ -111,3 +113,45 @@ class Recover(APIView):
         serializer = self.Serializer(entity)
 
         return Response(serializer.data)
+
+def get_active_view(model, serializer):
+    class Active(ActiveView):
+        Model = model
+        Serializer = serializer
+
+    return Active
+
+def get_inactive_view(model, serializer):
+    class Inactive(InactiveView):
+        Model = model
+        Serializer = serializer
+
+    return Inactive
+
+def get_delete_view(model, serializer):
+    class Delete(DeleteView):
+        Model = model
+        Serializer = serializer
+
+    return Delete
+
+def get_recover_view(model, serializer):
+    class Recover(RecoverView):
+        Model = model
+        Serializer = serializer
+
+    return Recover
+
+def get_new_view(model, serializer):
+    class New(NewView):
+        Model = model
+        Serializer = serializer
+
+    return New
+
+def get_alter_view(model, serializer):
+    class Alter(AlterView):
+        Model = model
+        Serializer = serializer
+
+    return Alter
