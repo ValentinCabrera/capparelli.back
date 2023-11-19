@@ -74,10 +74,13 @@ class ActiveView(APIView):
 
         return Response(serializer.data)
 
+from settings.permissions import IsOpen
 
 class InactiveView(APIView):
     Model = None
     Serializer = None
+
+    permission_classes = [IsOpen]
 
     def get(self, request):
         entities = inactive(self.Model)

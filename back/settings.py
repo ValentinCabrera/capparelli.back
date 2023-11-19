@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "menu",
     "order",
     "user",
+    "settings",
 ]
 
 MIDDLEWARE = [
