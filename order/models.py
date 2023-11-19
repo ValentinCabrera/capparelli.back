@@ -1,6 +1,6 @@
 from django.db import models
 from menu.models import Product, Ingredient
-from user.models import Client
+from user.models import User
 
 class OrderState(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -20,7 +20,7 @@ class OrderState(models.Model):
             raise ValueError(f"The state named {name} doestn exist.")
 
 class Order(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.RESTRICT, related_name='orders')
+    client = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='orders')
 
     @classmethod
     def create_order(cls, client):
