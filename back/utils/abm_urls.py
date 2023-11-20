@@ -1,10 +1,10 @@
 from django.urls import path
-from back.utils import (get_active_view,
-                        get_new_view,
-                        get_alter_view,
-                        get_inactive_view,
-                        get_recover_view,
-                        get_delete_view)
+from back.utils.abm_views import (get_active_view,
+                                  get_new_view,
+                                  get_alter_view,
+                                  get_inactive_view,
+                                  get_recover_view,
+                                  get_delete_view)
 
 def get_abm_patterns(Model, Serializer):
     return [

@@ -5,8 +5,9 @@ from django.contrib.auth.hashers import make_password
 class User(AbstractBaseUser):
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50)
+    mail = models.CharField(max_length=50)
 
-    USERNAME_FIELD = "id"
+    USERNAME_FIELD = "mail"
 
     def __str__(self):
         return self.name + ' ' + self.surname
@@ -23,12 +24,26 @@ class User(AbstractBaseUser):
 
         super(User, self).save(*args, **kwargs)
 
-class Group(models.Model):
-    name = models.CharField(max_length=50)
+    def is_from_group(self, Model, pk):
+        try:
+            return Model.objects.get(pk=pk)
 
-    def __str__(self):
-        return self.name
+        except:
+            return None
 
-class UserGroup(models.Model):
-    user = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='groups')
-    group = models.ForeignKey(Group, on_delete=models.RESTRICT, related_name='users')
+    def get_user_group(self):
+        if self.is_from_group(Client, self.pk):
+            return "Client"
+
+        elif self.is_from_group(Admin, self.pk):
+            return "Admin"
+
+        else:
+            return "None"
+
+
+class Client(User):
+    phone_number = models.PositiveBigIntegerField()
+
+class Admin(User):
+    phone_number = models.PositiveBigIntegerField()
