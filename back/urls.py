@@ -19,7 +19,8 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("menu/", include("menu.urls_parser")),
+    path('admin/', admin.site.urls),
+    path('menu/', include("menu.urls_parser")),
+    path('user/', include("user.urls_parser")),
     path('<path:undefined_path>', RedirectView.as_view(url='/admin/')),
 ]

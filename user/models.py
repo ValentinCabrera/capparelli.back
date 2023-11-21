@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import make_password
 class User(AbstractBaseUser):
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50)
-    mail = models.CharField(max_length=50)
+    mail = models.CharField(max_length=50, unique=True)
 
     USERNAME_FIELD = "mail"
 
@@ -40,6 +40,9 @@ class User(AbstractBaseUser):
 
         else:
             return "None"
+
+    def is_admin_group(self):
+        return self.get_user_group() == "Admin"
 
 
 class Client(User):
