@@ -11,7 +11,7 @@ class Category(models.Model):
 
     @classmethod
     def get_inactive_categories(cls):
-        return  Category.objects.filter(state=False)
+        return Category.objects.filter(state=False)
 
     def __str__(self):
         return self.name
