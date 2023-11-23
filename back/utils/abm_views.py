@@ -2,28 +2,30 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db import IntegrityError
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from user.permissions import IsAdmin
 
 def recover(entity):
     entity.state = True
     entity.save()
 
-
 def delete(entity):
     entity.state = False
     entity.save()
 
-
 def active(Model):
     return Model.objects.filter(state=True)
-
 
 def inactive(Model):
     return Model.objects.filter(state=False)
 
-
 class AlterView(APIView):
     Model = None
     Serializer = None
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def post(self, request):
         id = request.data.get("id")
@@ -45,10 +47,12 @@ class AlterView(APIView):
         except Exception as e:
             return Response({'error': e})
 
-
 class NewView(APIView):
     Model = None
     Serializer = None
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAdmin]
 
     def post(self, request):
         try:
@@ -68,19 +72,21 @@ class ActiveView(APIView):
     Model = None
     Serializer = None
 
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsAdmin]
+
     def get(self, request):
         entities = active(self.Model)
         serializer = self.Serializer(entities, many=True)
 
         return Response(serializer.data)
 
-from settings.permissions import IsOpen
-
 class InactiveView(APIView):
     Model = None
     Serializer = None
 
-    permission_classes = [IsOpen]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAdmin]
 
     def get(self, request):
         entities = inactive(self.Model)
@@ -89,12 +95,12 @@ class InactiveView(APIView):
 
         return Response(serializer.data)
 
-
-
-
 class DeleteView(APIView):
     Model = None
     Serializer = None
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAdmin]
 
     def post(self, request):
         id = request.data.get("id")
@@ -104,10 +110,12 @@ class DeleteView(APIView):
 
         return Response(serializer.data)
 
-
 class RecoverView(APIView):
     Model = None
     Serializer = None
+
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAdmin]
 
     def post(self, requst):
         id = requst.data.get("id")

@@ -5,8 +5,6 @@ from rest_framework.authentication import TokenAuthentication
 from user.serializers import UserSerializer
 from rest_framework.permissions import IsAuthenticated
 from user.models import User, MailCheck
-from back.utils.mail import send_email
-
 
 class UserTokenView(APIView):
     authentication_classes = [TokenAuthentication]

@@ -1,21 +1,13 @@
 from django.contrib import admin
-from .models import User, Client, Admin
+from .models import User
+from django.utils.html import format_html
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ['name', 'surname', 'get_user_group']
+    list_display = ["name", "surname", "mail", "verificado", "is_staff"]
 
-    def get_user_group(self, obj):
-        return obj.get_user_group()
+    def verificado(self, obj):
+        if obj.is_checked():
+            return format_html('<img src="/static/admin/img/icon-yes.svg" alt="True" title="True">')
 
-    get_user_group.short_description = "Group"
-
-
-@admin.register(Client)
-class ClientAdmin(admin.ModelAdmin):
-    list_display = ['name', 'surname', 'phone_number']
-
-@admin.register(Admin)
-class AdminAdmin(admin.ModelAdmin):
-    list_display = ['name', 'surname', 'phone_number']
-
+        return format_html('<img src="/static/admin/img/icon-no.svg" alt="False" title="False">')
