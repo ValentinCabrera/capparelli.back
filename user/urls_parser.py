@@ -17,6 +17,6 @@ from .views import *
 app_name = 'user'
 
 urlpatterns = [
-    path('users/', include('user.urls.user')),
+    path('user/', include('user.urls.user')),
     path('auth/', include('user.urls.auth'))
 ]

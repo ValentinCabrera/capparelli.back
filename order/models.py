@@ -19,45 +19,41 @@ class OrderState(models.Model):
 
             raise ValueError(f"The state named {name} doestn exist.")
 
+    def __str__(self):
+        return self.name
+
 class Order(models.Model):
     client = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='orders')
 
     @classmethod
-    def create_order(cls, client):
-        orders = Order.objects.filter(client=client)
+    def get_new_order(self, client):
+        order = Order(client=client)
+        order.save()
 
-        for order in orders:
-            if order.are_pidiendo():
-                return order
+        state = OrderState.get_state("pidiendo")
+        change = OrderStateChange(state=state, order=order)
+        change.save()
 
-        else:
-            order = Order(client=client)
-            order.save()
-            order.create_state_change('pidiendo')
-            return order
+        return order
+
+    def __str__(self):
+        return f"{self.pk} - {self.client}"
 
     def are_pidiendo(self):
-        return self.states_change.last() == 'pidiendo'
+        return self.states_change.last().state.name == 'pidiendo'
 
     def are_preparando(self):
-        return self.states_change.last() == 'preparando'
-    def create_state_change(self, name):
+        return self.states_change.last().state.name == 'preparando'
+    def change_state(self, name):
         state = OrderState.get_state(name)
         change = OrderStateChange(state=state, order=self)
         change.save()
-
-    def change_to_preparando(self):
-        if self.items.all.count() > 0:
-            self.create_state_change('preparando')
-
-    def change_listo(self):
-        self.create_state_change('listo')
 
 class OrderStateChange(models.Model):
     date_time = models.DateTimeField(auto_now=True)
 
     state = models.ForeignKey(OrderState, on_delete=models.RESTRICT)
-    order = models.ForeignKey(Order, on_delete=models.RESTRICT, related_name='states_change')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='states_change')
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.RESTRICT)

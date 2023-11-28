@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('menu/', include("menu.urls_parser")),
     path('user/', include("user.urls_parser")),
+    path('order/', include("order.urls_parser")),
     path('<path:undefined_path>', RedirectView.as_view(url='/admin/')),
 ]

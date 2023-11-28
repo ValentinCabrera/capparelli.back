@@ -61,6 +61,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_checked(self):
         return self.mail_check.count() == 0
 
+    def get_actual_order(self):
+        last = self.orders.last()
+
+        if last and last.are_pidiendo():
+            return last
+
 class MailCheck(models.Model):
     token = models.CharField(max_length=64)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="mail_check")
