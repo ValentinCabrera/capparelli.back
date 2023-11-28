@@ -12,10 +12,25 @@ class GetOrderView(APIView):
 
     def get(self, request):
         user = request.user
-        order = user.get_actual_order()
-
-        if not order:
-            order = Order.get_new_order(user)
+        order = Order.get_or_create_order(user)
 
         serializer = OrderSerializer(order)
         return Response(serializer.data)
+
+class AddItemView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        order = Order.get_or_create_order(user)
+
+        product_id = request.data.get("product")
+        quantity = request.data.get("quantity")
+        order.alter_item(product_id, quantity)
+
+        serializer = OrderSerializer(order)
+
+        return Response(serializer.data)
+
+

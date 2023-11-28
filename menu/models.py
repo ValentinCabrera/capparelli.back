@@ -24,7 +24,7 @@ class Product(models.Model):
 
     def get_price(self):
         try:
-            self.prices.first().price
+            return self.prices.first().price
 
         except:
             return 0

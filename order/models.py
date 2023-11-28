@@ -26,7 +26,12 @@ class Order(models.Model):
     client = models.ForeignKey(User, on_delete=models.RESTRICT, related_name='orders')
 
     @classmethod
-    def get_new_order(self, client):
+    def get_or_create_order(self, client):
+        order = client.get_actual_order()
+
+        if order:
+            return order
+
         order = Order(client=client)
         order.save()
 
@@ -48,6 +53,24 @@ class Order(models.Model):
         state = OrderState.get_state(name)
         change = OrderStateChange(state=state, order=self)
         change.save()
+
+    def alter_item(self, product_id, quantity):
+        try:
+            item = self.items.get(product_id=product_id)
+            item.quantity += quantity
+
+            if item.quantity > 0:
+                item.save()
+
+            else:
+                item.delete()
+
+        except:
+            if quantity > 0:
+                item = OrderItem(product_id=product_id, order=self, quantity=quantity)
+                item.save()
+
+
 
 class OrderStateChange(models.Model):
     date_time = models.DateTimeField(auto_now=True)
