@@ -5,20 +5,7 @@ from django.db import IntegrityError
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from user.permissions import IsAdmin
-
-def recover(entity):
-    entity.state = True
-    entity.save()
-
-def delete(entity):
-    entity.state = False
-    entity.save()
-
-def active(Model):
-    return Model.objects.filter(state=True)
-
-def inactive(Model):
-    return Model.objects.filter(state=False)
+from .abm_utils import recover, delete, active, inactive
 
 class AlterView(APIView):
     Model = None
@@ -52,7 +39,7 @@ class NewView(APIView):
     Serializer = None
 
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def post(self, request):
         try:
@@ -86,7 +73,7 @@ class InactiveView(APIView):
     Serializer = None
 
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
         entities = inactive(self.Model)
@@ -100,7 +87,7 @@ class DeleteView(APIView):
     Serializer = None
 
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def post(self, request):
         id = request.data.get("id")
@@ -115,7 +102,7 @@ class RecoverView(APIView):
     Serializer = None
 
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def post(self, requst):
         id = requst.data.get("id")

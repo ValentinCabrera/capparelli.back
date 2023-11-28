@@ -22,7 +22,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=50)
     surname = models.CharField(max_length=50)
     mail = models.EmailField(max_length=50, unique=True)
-    is_active = models.BooleanField(default=True)
+    state = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
 

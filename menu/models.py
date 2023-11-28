@@ -5,23 +5,13 @@ class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
     state = models.BooleanField(default=True)
 
-    @classmethod
-    def get_active_categories(cls):
-        return Category.objects.filter(state=True)
-
-    @classmethod
-    def get_inactive_categories(cls):
-        return Category.objects.filter(state=False)
-
     def __str__(self):
         return self.name
 
     def get_products(self):
-        return self.products.filter(product__state=True)
-
-    def delete(self, using=None, keep_parents=False):
-        self.state = False
-        self.save()
+        details = self.products.filter(product__state=True)
+        products = [detail.product for detail in details]
+        return products
 
 class Product(models.Model):
     name = models.CharField(max_length=50)
@@ -31,6 +21,13 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_price(self):
+        try:
+            return self.prices.first().price
+
+        except:
+            return 0
 
 
 class ProductPrice(models.Model):

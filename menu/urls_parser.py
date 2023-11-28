@@ -18,5 +18,6 @@ app_name = 'menu'
 
 urlpatterns = [
     path('categories/', include('menu.urls.category')),
-    path('products/', include('menu.urls.product'))
+    path('products/', include('menu.urls.product')),
+    path('menu/', include('menu.urls.menu'))
 ]
