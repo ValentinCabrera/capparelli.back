@@ -6,7 +6,7 @@ class OrderState(models.Model):
     name = models.CharField(max_length=50, unique=True)
     @classmethod
     def get_state(cls, name):
-        states = ['pidiendo', 'preparando', 'listo']
+        states = ['pendiente', 'cocina', 'listo']
 
         try:
             return OrderState.objects.get(name=name)
@@ -35,7 +35,7 @@ class Order(models.Model):
         order = Order(client=client)
         order.save()
 
-        state = OrderState.get_state("pidiendo")
+        state = OrderState.get_state("pendiente")
         change = OrderStateChange(state=state, order=order)
         change.save()
 
@@ -44,11 +44,14 @@ class Order(models.Model):
     def __str__(self):
         return f"{self.pk} - {self.client}"
 
-    def are_pidiendo(self):
-        return self.states_change.last().state.name == 'pidiendo'
+    def are_pendiente(self):
+        return self.states_change.last().state.name == 'pendiente'
 
-    def are_preparando(self):
-        return self.states_change.last().state.name == 'preparando'
+    def are_cocina(self):
+        return self.states_change.last().state.name == 'cocina'
+
+    def are_listo(self):
+        return self.states_change.last().state.name == 'listo'
     def change_state(self, name):
         state = OrderState.get_state(name)
         change = OrderStateChange(state=state, order=self)
@@ -70,7 +73,24 @@ class Order(models.Model):
                 item = OrderItem(product_id=product_id, order=self, quantity=quantity)
                 item.save()
 
+    def delete_item(self, product_id):
+        item = self.items.filter(product_id=product_id)
 
+        if item:
+            item[0].delete()
+
+
+    def get_subtotal(self):
+        prices = map(lambda i: i.product.get_price() * i.quantity, self.items.all())
+        return sum(prices)
+
+    def get_total(self):
+        total = self.get_subtotal()
+
+        for i in self.discounts.all():
+            total = i.discount.calculate(total)
+
+        return total
 
 class OrderStateChange(models.Model):
     date_time = models.DateTimeField(auto_now=True)
@@ -89,3 +109,24 @@ class ItemDetail(models.Model):
 
     order_item = models.ForeignKey(OrderItem, on_delete=models.RESTRICT)
     ingredient = models.ForeignKey(Ingredient, on_delete=models.RESTRICT)
+
+class DiscountStrategy(models.Model):
+    class Meta:
+        abstract = True
+    def calculate(self, total):
+        raise NotImplementedError("Método calculate debe ser implementado por las subclases")
+
+class DiscountCodePercentage(DiscountStrategy):
+    code = models.CharField(max_length=15)
+    percentage = models.FloatField()
+
+    def calculate(self, total):
+        return total * (1 - self.percentage / 100)
+
+
+class OrderDiscount(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.RESTRICT, related_name="discounts")
+    discount = models.ForeignKey(DiscountCodePercentage, on_delete=models.RESTRICT)
+
+    class Meta:
+        unique_together = ("order", "discount")

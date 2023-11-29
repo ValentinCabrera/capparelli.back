@@ -64,7 +64,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_actual_order(self):
         last = self.orders.last()
 
-        if last and last.are_pidiendo():
+        if last and last.are_pendiente():
             return last
 
 class MailCheck(models.Model):

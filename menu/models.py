@@ -32,7 +32,7 @@ class Product(models.Model):
 
 class ProductPrice(models.Model):
     date_time = models.DateTimeField()
-    price = models.PositiveIntegerField()
+    price = models.FloatField()
 
     product = models.ForeignKey(Product, on_delete=models.RESTRICT, related_name='prices')
 

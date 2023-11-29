@@ -20,3 +20,11 @@ class OrderStateAdmin(admin.ModelAdmin):
 @admin.register(OrderStateChange)
 class OrderStateChangeAdmin(admin.ModelAdmin):
     list_display = ['date_time', 'order', 'state']
+
+@admin.register(OrderDiscount)
+class OrderDiscountAdmin(admin.ModelAdmin):
+    list_display = ['order', 'discount']
+
+@admin.register(DiscountCodePercentage)
+class DiscountAdmin(admin.ModelAdmin):
+    list_display = ['code', 'percentage']

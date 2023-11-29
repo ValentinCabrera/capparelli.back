@@ -10,12 +10,21 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     items = serializers.SerializerMethodField()
+    subtotal = serializers.SerializerMethodField()
+    total = serializers.SerializerMethodField()
+
     class Meta:
         model = Order
-        fields = ["items"]
+        fields = ["id", "items", "subtotal", "total"]
 
     def get_items(self, order):
         items = order.items.all()
 
         serializer = OrderItemSerializer(items, many=True)
         return serializer.data
+
+    def get_subtotal(self, order):
+        return order.get_subtotal()
+
+    def get_total(self, order):
+        return order.get_total()
